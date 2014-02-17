@@ -41,33 +41,33 @@ class ParseError(Exception):
         self.lineno = lineno
 
 
-class Value(object):
-    """Class representing a value and its modifiers in the OBO file
-
-    This class has two member variables. `value` is the value itself,
-    `modifiers` are the corresponding modifiers in a tuple. Currently
-    the modifiers are not parsed in any way, but this might change in
-    the future.
-    """
-
-    __slots__ = ["value", "modifiers"]
-
-    def __init__(self, value, modifiers=()):
-        """Creates a new value"""
-        self.value = str(value)
-        if modifiers:
-            self.modifiers = tuple(modifiers)
-        else:
-            self.modifiers = None
-
-    def __str__(self):
-        """Returns the value itself (without modifiers)"""
-        return str(self.value)
-
-    def __repr__(self):
-        """Returns a Python representation of this object"""
-        return "%s(%r, %r)" % (self.__class__.__name__, \
-                self.value, self.modifiers)
+#class Value(object):
+#    """Class representing a value and its modifiers in the OBO file
+#
+#    This class has two member variables. `value` is the value itself,
+#    `modifiers` are the corresponding modifiers in a tuple. Currently
+#    the modifiers are not parsed in any way, but this might change in
+#    the future.
+#    """
+#
+#    __slots__ = ["value", "modifiers"]
+#
+#    def __init__(self, value, modifiers=()):
+#        """Creates a new value"""
+#        self.value = str(value)
+#        if modifiers:
+#            self.modifiers = tuple(modifiers)
+#        else:
+#            self.modifiers = None
+#
+#    def __str__(self):
+#        """Returns the value itself (without modifiers)"""
+#        return str(self.value)
+#
+#    def __repr__(self):
+#        """Returns a Python representation of this object"""
+#        return "%s(%r, %r)" % (self.__class__.__name__, \
+#                self.value, self.modifiers)
 
 
 class Stanza(object):
@@ -205,7 +205,7 @@ class Parser(object):
             value = value_and_mod
             mod = None
 
-        value = Value(value, mod)
+#        value = Value(value, mod)
         return tag, value
 
     def _read_headers(self):
@@ -218,9 +218,11 @@ class Parser(object):
                 return
             key, value = self._parse_line(line)
             try:
-                self.headers[key].append(value.value)
+#                self.headers[key].append(value.value)
+                self.headers[key].append(value)
             except KeyError:
-                self.headers[key] = [value.value]
+#                self.headers[key] = [value.value]
+                self.headers[key] = [value]
 
     def stanzas(self):
         """Iterates over the stanzas in this OBO file,
