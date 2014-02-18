@@ -21,7 +21,8 @@ G = {td:nx.Graph() for td in typedefs.keys()}
 
 for key,value in terms.iteritems():
     if value.has_key('is_a'):
-        G['is_a'].add_edge(key, value['is_a'][0])
+        for val in value['is_a']:
+            G['is_a'].add_edge(key, val)
 
     if value.has_key('relationship'):
         for rs in value['relationship']:
