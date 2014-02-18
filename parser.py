@@ -242,6 +242,8 @@ class Parser(object):
             except KeyError:
                 stanza.tags[tag] = [value]
 
+        yield stanza
+
     def __iter__(self): return self.stanzas()
 
 

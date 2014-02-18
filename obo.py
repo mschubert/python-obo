@@ -17,11 +17,15 @@ with open("BrendaTissueOBO.txt") as fp:
             typedefs[stanza.tags["id"][0]] = stanza.tags
 
 # add appropriate edges in graph
-G = nx.Graph()
+G = {td:nx.Graph() for td in typedefs.keys()}
+
 for key,value in terms.iteritems():
-    for td in typedefs.keys():
-        if value.has_key(td):
-            for edge in value[td]:
-                G.add_edge(key, edge) #TODO: add edge type // OR: add graph per edge type
+    if value.has_key('is_a'):
+        G['is_a'].add_edge(key, value['is_a'][0])
+
+    if value.has_key('relationship'):
+        for rs in value['relationship']:
+            rel,to = rs.split()
+            G[rel].add_edge(key, to)
 
 
