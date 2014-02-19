@@ -45,23 +45,23 @@ def getAllPredecessors(G, nodeId):
         isinstance(x,str) else x for x in predecessors))
 
 def coarsenIdentifiers(G, nodes, identifiers):
-    # temporarily remove all edges upstream of node list given
+    # temporarily remove edges leading to *nodes*
     removedEdges = []
     for node in nodes:
-        for child in G.successors(node):
-            removedEdges.append((node,child))
-            G.remove_edge(node,child)
+        for child in G.predecessors(node):
+            print "removing", child, "->", node
+            removedEdges.append((child,node))
+            G.remove_edge(child, node)
 
     # get all children of resulting graph
     lookup = dict()
     for node in nodes:
-        for pred in getAllPredecessors(G, node):
+        print "successors of", node, ":", getAllSuccessors(H, node)
+        for pred in getAllSuccessors(G, node):
             lookup[pred] = node
 
-    # re-add temporarily removed edges
-    for src, dest in removedEdges:
-        G.add_edge(src, dest)
-
+    # re-add edges and return mapped identifiers
+    G.add_edges_from(removedEdges)
     return [lookup[i] for i in identifiers]
 
 def coarsenLabels(G, nodes, labels, synonyms=False, exact=True):
