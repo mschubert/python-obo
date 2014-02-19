@@ -3,7 +3,8 @@
 import itertools as it
 from parser import Parser
 import networkx as nx
-from networkx.algorithms.traversal.depth_first_search import dfs_successors, dfs_predecessors
+from networkx.algorithms.traversal.depth_first_search import dfs_successors
+import numpy as np
 
 def loadAndParseFile(fname="BrendaTissueOBO.txt"):
     # parse file and populate obo data and graph object
@@ -40,29 +41,23 @@ def getAllSuccessors(G, nodeId):
         isinstance(x,str) else x for x in successors))
 
 def getAllPredecessors(G, nodeId):
-    predecessors = dfs_predecessors(G, source=nodeId).values()
-    return set(it.chain.from_iterable(it.repeat(x,1) if
-        isinstance(x,str) else x for x in predecessors))
+    return getAllSuccessors(G.reverse(), nodeId)
 
 def coarsenIdentifiers(G, nodes, identifiers):
-    # temporarily remove edges leading to *nodes*
-    removedEdges = []
-    for node in nodes:
-        for child in G.predecessors(node):
-            print "removing", child, "->", node
-            removedEdges.append((child,node))
-            G.remove_edge(child, node)
+    def plength(G, source, targets):
+        target = None
+        length = np.Inf
+        for t in targets:
+            try:
+                current = len(nx.shortest_path(G, source, t))
+                if current < length:
+                    length = current
+                    target = t
+            except nx.NetworkXNoPath:
+                pass
+        return target
 
-    # get all children of resulting graph
-    lookup = dict()
-    for node in nodes:
-        print "successors of", node, ":", getAllSuccessors(H, node)
-        for pred in getAllSuccessors(G, node):
-            lookup[pred] = node
-
-    # re-add edges and return mapped identifiers
-    G.add_edges_from(removedEdges)
-    return [lookup[i] for i in identifiers]
+    return [plength(G,i,nodes) for i in identifiers]
 
 def coarsenLabels(G, nodes, labels, synonyms=False, exact=True):
     # map labels to identifiers
@@ -70,13 +65,15 @@ def coarsenLabels(G, nodes, labels, synonyms=False, exact=True):
 #    coarsenIdentifiers(...)
     pass
 
-
+def writeSIF(G, None):
+    pass
 
 typedefs, terms, G = loadAndParseFile("BrendaTissueOBO.txt")
 
 #try: is_a, if no nonnection otherwise then part_of, then develops_from (or similar)
 #connected = nx.compose(G['part_of'], G['develops_from'])
 gg = nx.compose_all(G.values())
+gg = gg.reverse()
 
 #TODO: function for BTO:id->label, label(+/-synonyms)->BTO:id
 # graph cutting with ID list
