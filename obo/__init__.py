@@ -7,7 +7,7 @@ from networkx.algorithms.traversal.depth_first_search import dfs_successors
 import numpy as np
 
 class OBO(nx.DiGraph):
-    def __init__(self, fname="BrendaTissueOBO.txt"):
+    def __init__(self, fname):
         super(nx.DiGraph, self)
         nx.DiGraph.__init__(self)
         self.typedefs = dict()
