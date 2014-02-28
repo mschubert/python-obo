@@ -45,6 +45,7 @@ class OBO(nx.DiGraph):
             self.add_edges_from(self._edges[arg])
         self._active_edges = ebunch
 
+    @property
     def edge_types(self):
         return self._edges.keys()
 
